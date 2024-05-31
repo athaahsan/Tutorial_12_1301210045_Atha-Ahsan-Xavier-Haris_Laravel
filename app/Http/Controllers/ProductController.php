@@ -13,16 +13,18 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-        ]);
+        if ($request->isMethod('post')) {
+            $product = new Product();
+            $product->name = $request->input('name');
+            $product->description = $request->input('description');
+            $product->price = $request->input('price');
+            $product->stock = $request->input('stock');
+            $product->save();
 
-        $product = Product::create($request->all());
+            return response()->json(['message' => 'Product added successfully'], 200);
+        }
 
-        return response()->json($product, 201);
+        return response()->json(['message' => 'Invalid request method'], 400);
     }
 
     public function show(Product $product)
